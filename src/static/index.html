@@ -5,7 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mergington High School Activities</title>
     <link rel="stylesheet" href="styles.css" />
-    <style>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mergington High School Activities</title>
+        <script>
+            async function loadActivities() {
+                const response = await fetch('/activities');
+                const activities = await response.json();
+                const container = document.getElementById('activities-container');
+    
+                for (const [name, details] of Object.entries(activities)) {
+                    const card = document.createElement('div');
+                    card.className = 'activity-card';
+    
+                    const title = document.createElement('h3');
+                    title.textContent = name;
+                    card.appendChild(title);
+    
+                    const description = document.createElement('p');
+                    description.textContent = details.description;
+                    card.appendChild(description);
+    
+                    const schedule = document.createElement('p');
+                    schedule.textContent = `Schedule: ${details.schedule}`;
+                    card.appendChild(schedule);
+    
+                    const participantsSection = document.createElement('div');
+                    participantsSection.className = 'participants-section';
+                    participantsSection.textContent = 'Participants: Loading...';
+                    card.appendChild(participantsSection);
+    
+                    // Fetch participants for the activity
+                    fetch(`/activities/${encodeURIComponent(name)}/participants`)
+                        .then(res => res.json())
+                        .then(data => {
+                            participantsSection.textContent = `Participants: ${data.participants.join(', ') || 'None'}`;
+                        })
+                        .catch(() => {
+                            participantsSection.textContent = 'Participants: Unable to load';
+                        });
+    
+                    container.appendChild(card);
+                }
+            }
+    
+            window.onload = loadActivities;
+        </script>
+        <style>
+            .activity-card {
+                border: 1px solid #ccc;
+                padding: 16px;
+                margin: 8px;
+                border-radius: 8px;
+                box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .participants-section {
+                margin-top: 8px;
+                font-style: italic;
+                color: #555;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to Mergington High School Activities</h1>
+        <div id="activities-container"></div>
+    </body>
+    </html>    <style>
       .activity-card {
         border: 1px solid #ccc;
         padding: 16px;
